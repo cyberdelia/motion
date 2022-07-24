@@ -49,7 +49,7 @@ public interface Context {
 }
 
 internal class RecordContext(
-    val properties: MutableMap<String, Any?> = mutableMapOf(),
+    val properties: MutableMap<String, Any?> = mutableMapOf()
 ) : Context {
     override fun getProperty(name: String): Any? = properties[name]
 
