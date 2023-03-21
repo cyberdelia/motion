@@ -6,7 +6,7 @@ import java.util.concurrent.PriorityBlockingQueue
 import java.util.concurrent.TimeUnit
 
 internal class DeadlineQueue(
-    private val deadline: Duration
+    private val deadline: Duration,
 ) {
     private val queue = PriorityBlockingQueue(10, DeadlineComparator())
 

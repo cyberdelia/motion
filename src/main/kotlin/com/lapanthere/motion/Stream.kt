@@ -46,7 +46,7 @@ public class Stream<V>(
     private val serializer: Serializer<V>,
     interceptors: List<Interceptor<V>> = emptyList(),
     private val kinesis: KinesisAsyncClient = KinesisAsyncClient.create(),
-    private val executorService: ExecutorService = Executors.newSingleThreadExecutor()
+    private val executorService: ExecutorService = Executors.newSingleThreadExecutor(),
 ) : Closeable {
     private val buffer = DeadlineQueue(deadline)
     private val queue = PriorityBlockingQueue(10, ArrivalComparator())
@@ -197,7 +197,7 @@ public class Stream<V>(
                             .partitionKey(UUID.randomUUID().toString())
                             .explicitHashKey(shard.explicitHashKey)
                             .build()
-                    }
+                    },
                 )
             }.handle { response, e ->
                 if (e == null) {
@@ -208,7 +208,7 @@ public class Stream<V>(
 
                     if (response.records().size != batch.size) {
                         batch.completeExceptionally(
-                            IllegalStateException("response contains ${response.records().size} but ${batch.size} were sent")
+                            IllegalStateException("response contains ${response.records().size} but ${batch.size} were sent"),
                         )
                     } else {
                         response.records().zip(batch) { entry, record ->

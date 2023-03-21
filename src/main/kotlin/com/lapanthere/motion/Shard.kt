@@ -10,7 +10,7 @@ private const val BYTES_PER_SECOND: Long = 1_048_576
 
 internal data class Shard(
     val name: String,
-    val explicitHashKey: String
+    val explicitHashKey: String,
 ) : Comparable<Shard> {
     private val records = Bucket.builder()
         .addLimit(Bandwidth.classic(RECORDS_PER_SECOND, Refill.intervally(RECORDS_PER_SECOND, Duration.ofSeconds(1))))

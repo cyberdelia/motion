@@ -18,6 +18,6 @@ public data class Receipt(val sequenceNumber: String, val shardID: String, val d
     internal constructor(entry: PutRecordsResultEntry, record: Record) : this(
         entry.sequenceNumber(),
         entry.shardId(),
-        Duration.between(Instant.now(), record.arrival).abs()
+        Duration.between(Instant.now(), record.arrival).abs(),
     )
 }

@@ -5,7 +5,7 @@ import java.time.Instant
 internal fun emptyBatch() = Batch()
 
 internal class Batch(
-    private val records: MutableList<Record> = mutableListOf()
+    private val records: MutableList<Record> = mutableListOf(),
 ) : List<Record> by records {
     val byteSize: Int
         get() = records.sumOf { it.byteSize }
