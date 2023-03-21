@@ -54,7 +54,3 @@ java {
 kotlin {
     explicitApiWarning()
 }
-
-kotlinter {
-    disabledRules = arrayOf("filename")
-}

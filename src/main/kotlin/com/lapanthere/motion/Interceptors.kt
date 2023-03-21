@@ -9,7 +9,7 @@ internal class Interceptors<V>(private val interceptors: List<Interceptor<V>>) {
 
     fun beforePublication(
         record: V,
-        context: RecordContext = RecordContext()
+        context: RecordContext = RecordContext(),
     ): Pair<V, RecordContext> =
         Pair(
             interceptors.fold(record) { acc, next ->
@@ -20,7 +20,7 @@ internal class Interceptors<V>(private val interceptors: List<Interceptor<V>>) {
                     acc
                 }
             },
-            context
+            context,
         )
 
     internal fun afterPublication(receipt: Receipt?, throwable: Throwable?, context: Context) =

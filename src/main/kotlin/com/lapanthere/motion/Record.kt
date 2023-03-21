@@ -7,7 +7,7 @@ internal data class Record(
     val raw: ByteArray,
     val expiration: Instant,
     var deadline: Instant = Instant.now().plusMillis(100),
-    val arrival: Instant = Instant.now()
+    val arrival: Instant = Instant.now(),
 ) : CompletableFuture<Receipt>() {
     init {
         require(byteSize <= SIZE_THRESHOLD) { "record size cannot be larger than 1MiB" }

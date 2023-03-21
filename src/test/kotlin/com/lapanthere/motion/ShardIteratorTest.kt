@@ -34,7 +34,7 @@ internal class ShardIteratorTest {
                 }
                 .sequenceNumberRange {
                     it.startingSequenceNumber("49579844037749634101363594861582244564829020124710982690")
-                }.build()
+                }.build(),
         ).build()
     private val record = Record(byteArrayOf(), expiration = Instant.now().plusSeconds(1))
     private val kinesis: KinesisAsyncClient = mockk {

@@ -46,7 +46,7 @@ internal class StreamTest {
                 }
                 .sequenceNumberRange {
                     it.startingSequenceNumber("49579844037749634101363594861582244564829020124710982690")
-                }.build()
+                }.build(),
         ).build()
     private val failureResponse = PutRecordsResponse.builder()
         .failedRecordCount(1)
@@ -55,7 +55,7 @@ internal class StreamTest {
                 .shardId("shardId-000000000001")
                 .errorCode("InternalFailure")
                 .errorMessage("Internal service failure.")
-                .build()
+                .build(),
         )
         .build()
     private val partialResponse = PutRecordsResponse.builder()
@@ -74,7 +74,7 @@ internal class StreamTest {
                 .shardId("shardId-000000000001")
                 .errorCode("ProvisionedThroughputExceededException")
                 .errorMessage("Rate exceeded for shard shardId-000000000001 in stream exampleStreamName under account 111111111111.")
-                .build()
+                .build(),
         )
         .build()
 
@@ -100,9 +100,9 @@ internal class StreamTest {
                                 .shardId(shard)
                                 .sequenceNumber("49543463076548007577105092703039560359975228518395019266")
                                 .build()
-                        }
+                        },
                     )
-                    .build()
+                    .build(),
             )
         }
     }
@@ -125,8 +125,8 @@ internal class StreamTest {
             assertTrue(
                 receipt.sequenceNumber in arrayOf(
                     "49579844037749634101363594861582244564829020124710982690",
-                    "49543463076548007577105092703039560359975228518395019266"
-                )
+                    "49543463076548007577105092703039560359975228518395019266",
+                ),
             )
         }
     }
@@ -151,7 +151,7 @@ internal class StreamTest {
             "test",
             deadline = Duration.ofSeconds(1),
             serializer = JacksonSerializer(),
-            kinesis = kinesis
+            kinesis = kinesis,
         ).use { stream ->
             repeat(COUNT_THRESHOLD + 1) { stream.publish(ByteArray(0)) }
         }
@@ -164,7 +164,7 @@ internal class StreamTest {
             "test",
             deadline = Duration.ofSeconds(1),
             serializer = JacksonSerializer(),
-            kinesis = kinesis
+            kinesis = kinesis,
         ).use { stream ->
             assertEquals(0, stream.pending)
             stream.publish(emptyMap())
@@ -178,7 +178,7 @@ internal class StreamTest {
             "test",
             deadline = Duration.ofSeconds(1),
             serializer = JacksonSerializer(),
-            kinesis = kinesis
+            kinesis = kinesis,
         ).use { stream ->
             assertEquals(Duration.ZERO, stream.age)
             stream.publish(emptyMap())
@@ -192,7 +192,7 @@ internal class StreamTest {
             "test",
             deadline = Duration.ofSeconds(1),
             serializer = JacksonSerializer(),
-            kinesis = kinesis
+            kinesis = kinesis,
         ).use { stream ->
             repeat(10) { stream.publish(ByteArray(SIZE_THRESHOLD / 8)) }
         }

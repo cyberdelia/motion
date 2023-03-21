@@ -8,7 +8,7 @@ import java.util.concurrent.locks.ReentrantLock
 
 internal class ShardIterator(
     private val name: String,
-    private val kinesis: KinesisAsyncClient = KinesisAsyncClient.create()
+    private val kinesis: KinesisAsyncClient = KinesisAsyncClient.create(),
 ) : Iterator<Shard> {
     private companion object {
         private var logger = LoggerFactory.getLogger(ShardIterator::class.java)
