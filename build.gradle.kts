@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.8.21"
+    kotlin("jvm") version "1.8.22"
     `maven-publish`
     id("org.jetbrains.dokka") version "1.8.10"
     id("org.jmailen.kotlinter") version "3.15.0"
