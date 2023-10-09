@@ -27,85 +27,90 @@ class JacksonSerializer<V> : Serializer<V> {
 }
 
 internal class StreamTest {
-    private val listResponse = ListShardsResponse.builder()
-        .shards(
-            Shard.builder()
-                .shardId("shardId-000000000001")
-                .hashKeyRange {
-                    it.startingHashKey("34028236692093846346337460743176821145")
-                        .endingHashKey("68056473384187692692674921486353642280")
-                }
-                .sequenceNumberRange {
-                    it.startingSequenceNumber("49579844037727333356165064238440708846556371693205002258")
-                }.build(),
-            Shard.builder()
-                .shardId("shardId-000000000002")
-                .hashKeyRange {
-                    it.startingHashKey("68056473384187692692674921486353642281")
-                        .endingHashKey("102084710076281539039012382229530463436")
-                }
-                .sequenceNumberRange {
-                    it.startingSequenceNumber("49579844037749634101363594861582244564829020124710982690")
-                }.build(),
-        ).build()
-    private val failureResponse = PutRecordsResponse.builder()
-        .failedRecordCount(1)
-        .records(
-            PutRecordsResultEntry.builder()
-                .shardId("shardId-000000000001")
-                .errorCode("InternalFailure")
-                .errorMessage("Internal service failure.")
-                .build(),
-        )
-        .build()
-    private val partialResponse = PutRecordsResponse.builder()
-        .failedRecordCount(1)
-        .records(
-            PutRecordsResultEntry.builder()
-                .shardId("shardId-000000000001")
-                .sequenceNumber("49543463076548007577105092703039560359975228518395019266")
-                .build(),
-            PutRecordsResultEntry.builder()
-                .shardId("shardId-000000000001")
-                .errorCode("InternalFailure")
-                .errorMessage("Internal service failure.")
-                .build(),
-            PutRecordsResultEntry.builder()
-                .shardId("shardId-000000000001")
-                .errorCode("ProvisionedThroughputExceededException")
-                .errorMessage("Rate exceeded for shard shardId-000000000001 in stream exampleStreamName under account 111111111111.")
-                .build(),
-        )
-        .build()
-
-    private val kinesis: KinesisAsyncClient = mockk {
-        every { listShards(any<Consumer<ListShardsRequest.Builder>>()) } returns
-            CompletableFuture.completedFuture(listResponse)
-        every { putRecords(any<Consumer<PutRecordsRequest.Builder>>()) } answers { call ->
-            val builder = PutRecordsRequest.builder()
-            (call.invocation.args.first() as Consumer<PutRecordsRequest.Builder>).accept(builder)
-            val request = builder.build()
-            val records = request.records().size
-            val shard = when (request.records().first().explicitHashKey()) {
-                "34028236692093846346337460743176821145" -> "shardId-000000000001"
-                "68056473384187692692674921486353642281" -> "shardId-000000000002"
-                else -> "shardId-000000000001"
-            }
-            CompletableFuture.completedFuture(
-                PutRecordsResponse.builder()
-                    .failedRecordCount(0)
-                    .records(
-                        (1..records).map {
-                            PutRecordsResultEntry.builder()
-                                .shardId(shard)
-                                .sequenceNumber("49543463076548007577105092703039560359975228518395019266")
-                                .build()
-                        },
-                    )
+    private val listResponse =
+        ListShardsResponse.builder()
+            .shards(
+                Shard.builder()
+                    .shardId("shardId-000000000001")
+                    .hashKeyRange {
+                        it.startingHashKey("34028236692093846346337460743176821145")
+                            .endingHashKey("68056473384187692692674921486353642280")
+                    }
+                    .sequenceNumberRange {
+                        it.startingSequenceNumber("49579844037727333356165064238440708846556371693205002258")
+                    }.build(),
+                Shard.builder()
+                    .shardId("shardId-000000000002")
+                    .hashKeyRange {
+                        it.startingHashKey("68056473384187692692674921486353642281")
+                            .endingHashKey("102084710076281539039012382229530463436")
+                    }
+                    .sequenceNumberRange {
+                        it.startingSequenceNumber("49579844037749634101363594861582244564829020124710982690")
+                    }.build(),
+            ).build()
+    private val failureResponse =
+        PutRecordsResponse.builder()
+            .failedRecordCount(1)
+            .records(
+                PutRecordsResultEntry.builder()
+                    .shardId("shardId-000000000001")
+                    .errorCode("InternalFailure")
+                    .errorMessage("Internal service failure.")
                     .build(),
             )
+            .build()
+    private val partialResponse =
+        PutRecordsResponse.builder()
+            .failedRecordCount(1)
+            .records(
+                PutRecordsResultEntry.builder()
+                    .shardId("shardId-000000000001")
+                    .sequenceNumber("49543463076548007577105092703039560359975228518395019266")
+                    .build(),
+                PutRecordsResultEntry.builder()
+                    .shardId("shardId-000000000001")
+                    .errorCode("InternalFailure")
+                    .errorMessage("Internal service failure.")
+                    .build(),
+                PutRecordsResultEntry.builder()
+                    .shardId("shardId-000000000001")
+                    .errorCode("ProvisionedThroughputExceededException")
+                    .errorMessage("Rate exceeded for shard shardId-000000000001 in stream exampleStreamName under account 111111111111.")
+                    .build(),
+            )
+            .build()
+
+    private val kinesis: KinesisAsyncClient =
+        mockk {
+            every { listShards(any<Consumer<ListShardsRequest.Builder>>()) } returns
+                CompletableFuture.completedFuture(listResponse)
+            every { putRecords(any<Consumer<PutRecordsRequest.Builder>>()) } answers { call ->
+                val builder = PutRecordsRequest.builder()
+                (call.invocation.args.first() as Consumer<PutRecordsRequest.Builder>).accept(builder)
+                val request = builder.build()
+                val records = request.records().size
+                val shard =
+                    when (request.records().first().explicitHashKey()) {
+                        "34028236692093846346337460743176821145" -> "shardId-000000000001"
+                        "68056473384187692692674921486353642281" -> "shardId-000000000002"
+                        else -> "shardId-000000000001"
+                    }
+                CompletableFuture.completedFuture(
+                    PutRecordsResponse.builder()
+                        .failedRecordCount(0)
+                        .records(
+                            (1..records).map {
+                                PutRecordsResultEntry.builder()
+                                    .shardId(shard)
+                                    .sequenceNumber("49543463076548007577105092703039560359975228518395019266")
+                                    .build()
+                            },
+                        )
+                        .build(),
+                )
+            }
         }
-    }
 
     @Test
     fun `complete exceptionally after timeout`() {
@@ -123,10 +128,11 @@ internal class StreamTest {
             val receipt = it.publish(emptyMap(), expires = Duration.ofMillis(125)).get()
             assertTrue(receipt.shardID in arrayOf("shardId-000000000001", "shardId-000000000002"))
             assertTrue(
-                receipt.sequenceNumber in arrayOf(
-                    "49579844037749634101363594861582244564829020124710982690",
-                    "49543463076548007577105092703039560359975228518395019266",
-                ),
+                receipt.sequenceNumber in
+                    arrayOf(
+                        "49579844037749634101363594861582244564829020124710982690",
+                        "49543463076548007577105092703039560359975228518395019266",
+                    ),
             )
         }
     }
@@ -201,9 +207,10 @@ internal class StreamTest {
 
     @Test
     fun `ensures queue is emptied on close`() {
-        val receipt = Stream<Map<String, Any?>>("test", serializer = JacksonSerializer(), kinesis = kinesis).use {
-            it.publish(emptyMap(), expires = Duration.ofMillis(250))
-        }
+        val receipt =
+            Stream<Map<String, Any?>>("test", serializer = JacksonSerializer(), kinesis = kinesis).use {
+                it.publish(emptyMap(), expires = Duration.ofMillis(250))
+            }
         assertDoesNotThrow { receipt.get() }
     }
 

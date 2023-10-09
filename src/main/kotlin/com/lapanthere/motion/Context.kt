@@ -21,7 +21,10 @@ public interface Context {
      * @param name a `String` specifying the name of the property.
      * @param value an `Object` representing the property to be bound.
      */
-    public fun setProperty(name: String, value: Any?)
+    public fun setProperty(
+        name: String,
+        value: Any?,
+    )
 
     /**
      * Returns `true` if the property with the given name is registered in the current record
@@ -53,7 +56,10 @@ internal class RecordContext(
 ) : Context {
     override fun getProperty(name: String): Any? = properties[name]
 
-    override fun setProperty(name: String, value: Any?) {
+    override fun setProperty(
+        name: String,
+        value: Any?,
+    ) {
         properties[name] = value
     }
 

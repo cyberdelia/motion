@@ -15,7 +15,10 @@ public fun interface Interceptor<V> {
      * @param context A record context to store metadata.
      * @return the record to be published to Kinesis.
      */
-    public fun beforePublication(record: V, context: Context): V = record
+    public fun beforePublication(
+        record: V,
+        context: Context,
+    ): V = record
 
     /**
      * This is called when the record has been published, or when sending the record fails.
@@ -26,7 +29,11 @@ public fun interface Interceptor<V> {
      * @param throwable The exception thrown during publication of this record. `null` if no error occurred.
      * @param context The same record context passed to the interceptor `beforcePublication` call.
      */
-    public fun afterPublication(receipt: Receipt?, throwable: Throwable?, context: Context)
+    public fun afterPublication(
+        receipt: Receipt?,
+        throwable: Throwable?,
+        context: Context,
+    )
 
     /**
      * Close the interceptor if needed.

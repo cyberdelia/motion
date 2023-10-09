@@ -19,16 +19,21 @@ internal class DeadlineQueue(
         return queue.offer(record)
     }
 
-    fun requeue(records: List<Record>): Boolean = records.map {
-        requeue(it)
-    }.any()
+    fun requeue(records: List<Record>): Boolean =
+        records.map {
+            requeue(it)
+        }.any()
 
-    fun drain(max: Int, timeout: Duration): Collection<Record> = sequence {
-        for (i in 0 until queue.size.coerceAtMost(max).coerceAtLeast(1)) {
-            val record = queue.poll(timeout.toMillis(), TimeUnit.MILLISECONDS)
-            if (record != null) {
-                yield(record)
+    fun drain(
+        max: Int,
+        timeout: Duration,
+    ): Collection<Record> =
+        sequence {
+            for (i in 0 until queue.size.coerceAtMost(max).coerceAtLeast(1)) {
+                val record = queue.poll(timeout.toMillis(), TimeUnit.MILLISECONDS)
+                if (record != null) {
+                    yield(record)
+                }
             }
-        }
-    }.toList()
+        }.toList()
 }
