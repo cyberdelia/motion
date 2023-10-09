@@ -12,19 +12,23 @@ internal data class Shard(
     val name: String,
     val explicitHashKey: String,
 ) : Comparable<Shard> {
-    private val records = Bucket.builder()
-        .addLimit(Bandwidth.classic(RECORDS_PER_SECOND, Refill.intervally(RECORDS_PER_SECOND, Duration.ofSeconds(1))))
-        .build()
+    private val records =
+        Bucket.builder()
+            .addLimit(Bandwidth.classic(RECORDS_PER_SECOND, Refill.intervally(RECORDS_PER_SECOND, Duration.ofSeconds(1))))
+            .build()
 
-    private val bytes = Bucket.builder()
-        .addLimit(Bandwidth.classic(BYTES_PER_SECOND, Refill.intervally(BYTES_PER_SECOND, Duration.ofSeconds(1))))
-        .build()
+    private val bytes =
+        Bucket.builder()
+            .addLimit(Bandwidth.classic(BYTES_PER_SECOND, Refill.intervally(BYTES_PER_SECOND, Duration.ofSeconds(1))))
+            .build()
 
-    private fun mayConsumeRecords(): Boolean = records.estimateAbilityToConsume(1)
-        .canBeConsumed()
+    private fun mayConsumeRecords(): Boolean =
+        records.estimateAbilityToConsume(1)
+            .canBeConsumed()
 
-    private fun mayConsumeBytes(byteSize: Int): Boolean = bytes.estimateAbilityToConsume(byteSize.toLong())
-        .canBeConsumed()
+    private fun mayConsumeBytes(byteSize: Int): Boolean =
+        bytes.estimateAbilityToConsume(byteSize.toLong())
+            .canBeConsumed()
 
     val availableRecords: Int
         get() = records.availableTokens.toInt()
@@ -37,8 +41,7 @@ internal data class Shard(
 
     fun mayConsume(byteSize: Int): Boolean = mayConsumeRecords() && mayConsumeBytes(byteSize)
 
-    fun consume(byteSize: Int): Boolean =
-        records.tryConsume(1) && bytes.tryConsume(byteSize.toLong())
+    fun consume(byteSize: Int): Boolean = records.tryConsume(1) && bytes.tryConsume(byteSize.toLong())
 
     override fun compareTo(other: Shard): Int = compareValuesBy(this, other, { it.name }, { it.explicitHashKey })
 }

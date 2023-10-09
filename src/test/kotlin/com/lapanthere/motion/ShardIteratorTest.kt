@@ -15,32 +15,34 @@ import java.util.function.Consumer
 import kotlin.test.assertNotNull
 
 internal class ShardIteratorTest {
-    private val listResponse = ListShardsResponse.builder()
-        .shards(
-            Shard.builder()
-                .shardId("shardId-000000000001")
-                .hashKeyRange {
-                    it.startingHashKey("34028236692093846346337460743176821145")
-                        .endingHashKey("68056473384187692692674921486353642280")
-                }
-                .sequenceNumberRange {
-                    it.startingSequenceNumber("49579844037727333356165064238440708846556371693205002258")
-                }.build(),
-            Shard.builder()
-                .shardId("shardId-000000000002")
-                .hashKeyRange {
-                    it.startingHashKey("68056473384187692692674921486353642281")
-                        .endingHashKey("102084710076281539039012382229530463436")
-                }
-                .sequenceNumberRange {
-                    it.startingSequenceNumber("49579844037749634101363594861582244564829020124710982690")
-                }.build(),
-        ).build()
+    private val listResponse =
+        ListShardsResponse.builder()
+            .shards(
+                Shard.builder()
+                    .shardId("shardId-000000000001")
+                    .hashKeyRange {
+                        it.startingHashKey("34028236692093846346337460743176821145")
+                            .endingHashKey("68056473384187692692674921486353642280")
+                    }
+                    .sequenceNumberRange {
+                        it.startingSequenceNumber("49579844037727333356165064238440708846556371693205002258")
+                    }.build(),
+                Shard.builder()
+                    .shardId("shardId-000000000002")
+                    .hashKeyRange {
+                        it.startingHashKey("68056473384187692692674921486353642281")
+                            .endingHashKey("102084710076281539039012382229530463436")
+                    }
+                    .sequenceNumberRange {
+                        it.startingSequenceNumber("49579844037749634101363594861582244564829020124710982690")
+                    }.build(),
+            ).build()
     private val record = Record(byteArrayOf(), expiration = Instant.now().plusSeconds(1))
-    private val kinesis: KinesisAsyncClient = mockk {
-        every { listShards(any<Consumer<ListShardsRequest.Builder>>()) } returns
-            CompletableFuture.completedFuture(listResponse)
-    }
+    private val kinesis: KinesisAsyncClient =
+        mockk {
+            every { listShards(any<Consumer<ListShardsRequest.Builder>>()) } returns
+                CompletableFuture.completedFuture(listResponse)
+        }
 
     @Test
     fun `fetch shards when created`() {

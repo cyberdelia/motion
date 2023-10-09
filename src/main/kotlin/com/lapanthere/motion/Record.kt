@@ -42,9 +42,15 @@ internal data class Record(
 }
 
 internal class DeadlineComparator : Comparator<Record> {
-    override fun compare(o1: Record, o2: Record): Int = o1.deadline.compareTo(o2.deadline)
+    override fun compare(
+        o1: Record,
+        o2: Record,
+    ): Int = o1.deadline.compareTo(o2.deadline)
 }
 
 internal class ArrivalComparator : Comparator<Record> {
-    override fun compare(o1: Record, o2: Record): Int = o1.arrival.compareTo(o2.arrival)
+    override fun compare(
+        o1: Record,
+        o2: Record,
+    ): Int = o1.arrival.compareTo(o2.arrival)
 }

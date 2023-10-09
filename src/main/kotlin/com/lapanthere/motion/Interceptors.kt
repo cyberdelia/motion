@@ -23,12 +23,15 @@ internal class Interceptors<V>(private val interceptors: List<Interceptor<V>>) {
             context,
         )
 
-    internal fun afterPublication(receipt: Receipt?, throwable: Throwable?, context: Context) =
-        interceptors.forEach {
-            try {
-                it.afterPublication(receipt, throwable, context)
-            } catch (e: Exception) {
-                logger.warn("interceptor execution failed", e)
-            }
+    internal fun afterPublication(
+        receipt: Receipt?,
+        throwable: Throwable?,
+        context: Context,
+    ) = interceptors.forEach {
+        try {
+            it.afterPublication(receipt, throwable, context)
+        } catch (e: Exception) {
+            logger.warn("interceptor execution failed", e)
         }
+    }
 }

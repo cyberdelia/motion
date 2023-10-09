@@ -9,5 +9,6 @@ import java.io.Closeable
  */
 public fun interface Serializer<V> : Closeable {
     public fun serialize(value: V): ByteArray
+
     override fun close() {}
 }

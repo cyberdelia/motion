@@ -74,7 +74,10 @@ public class Stream<V>(
      * @return a future for the publishing receipt
      *
      */
-    public fun publish(record: V, expires: Duration = Duration.ofSeconds(30)): Future<Receipt> {
+    public fun publish(
+        record: V,
+        expires: Duration = Duration.ofSeconds(30),
+    ): Future<Receipt> {
         check(producer.isActive) { "publisher is already closed" }
 
         val (intercepted, context) = interceptors.beforePublication(record)
@@ -91,7 +94,10 @@ public class Stream<V>(
      * @return a future for the publishing receipt
      *
      */
-    internal fun publish(payload: ByteArray, expires: Duration = Duration.ofSeconds(30)): CompletableFuture<Receipt> {
+    internal fun publish(
+        payload: ByteArray,
+        expires: Duration = Duration.ofSeconds(30),
+    ): CompletableFuture<Receipt> {
         require(payload.size <= MAX_RECORD_SIZE) { "payload size must be less than or equal to 1MB" }
         require(expires > deadline) { "expiry must be greater than timeout" }
         return Record(payload, expiration = Instant.now() + expires).apply {
@@ -148,45 +154,49 @@ public class Stream<V>(
             isActive = false
         }
 
-        private val batches = iterator {
-            var batch = emptyBatch()
-            var shard = iterator.next()
-            while (isActive || !buffer.isEmpty()) {
-                val records = buffer.drain(min(COUNT_THRESHOLD, shard.availableRecords), deadline.dividedBy(4))
-                for (record in records) {
-                    if (record.isExpired) {
-                        record.completeExceptionally(TimeoutException("couldn't publish record in time"))
-                        continue
+        private val batches =
+            iterator {
+                var batch = emptyBatch()
+                var shard = iterator.next()
+                while (isActive || !buffer.isEmpty()) {
+                    val records = buffer.drain(min(COUNT_THRESHOLD, shard.availableRecords), deadline.dividedBy(4))
+                    for (record in records) {
+                        if (record.isExpired) {
+                            record.completeExceptionally(TimeoutException("couldn't publish record in time"))
+                            continue
+                        }
+
+                        if (batch.byteSize + record.byteSize > SIZE_THRESHOLD ||
+                            batch.size > COUNT_THRESHOLD - 1 ||
+                            !shard.mayConsume(record.byteSize)
+                        ) {
+                            yield(Pair(batch, shard))
+                            shard = iterator.next()
+                            batch = emptyBatch()
+                        }
+
+                        if (shard.consume(record.byteSize)) {
+                            batch.add(record)
+                        } else {
+                            buffer.requeue(record)
+                        }
                     }
 
-                    if (batch.byteSize + record.byteSize > SIZE_THRESHOLD ||
-                        batch.size > COUNT_THRESHOLD - 1 ||
-                        !shard.mayConsume(record.byteSize)
-                    ) {
+                    if (batch.isExpired) {
                         yield(Pair(batch, shard))
                         shard = iterator.next()
                         batch = emptyBatch()
                     }
-
-                    if (shard.consume(record.byteSize)) {
-                        batch.add(record)
-                    } else {
-                        buffer.requeue(record)
-                    }
                 }
 
-                if (batch.isExpired) {
-                    yield(Pair(batch, shard))
-                    shard = iterator.next()
-                    batch = emptyBatch()
-                }
+                // Ensure we flush all records left.
+                yield(Pair(batch, shard))
             }
 
-            // Ensure we flush all records left.
-            yield(Pair(batch, shard))
-        }
-
-        private fun flush(batch: Batch, shard: Shard) {
+        private fun flush(
+            batch: Batch,
+            shard: Shard,
+        ) {
             logger.debug("publishing ${batch.size} records to ${shard.name}")
 
             kinesis.putRecords {
@@ -216,12 +226,13 @@ public class Stream<V>(
                                 record.complete(Receipt(entry, record))
                             } else {
                                 if (record.isExpired) {
-                                    val exception = when (entry.errorCode()) {
-                                        "InternalFailure" -> InternalFailureException.create(entry.errorMessage(), null)
-                                        "ProvisionedThroughputExceededException" ->
-                                            ProvisionedThroughputExceededException.create(entry.errorMessage(), null)
-                                        else -> TimeoutException("couldn't publish record in time")
-                                    }
+                                    val exception =
+                                        when (entry.errorCode()) {
+                                            "InternalFailure" -> InternalFailureException.create(entry.errorMessage(), null)
+                                            "ProvisionedThroughputExceededException" ->
+                                                ProvisionedThroughputExceededException.create(entry.errorMessage(), null)
+                                            else -> TimeoutException("couldn't publish record in time")
+                                        }
                                     record.completeExceptionally(exception)
                                 } else {
                                     buffer.requeue(record)

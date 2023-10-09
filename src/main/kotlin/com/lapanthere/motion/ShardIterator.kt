@@ -23,13 +23,14 @@ internal class ShardIterator(
 
     override fun hasNext(): Boolean = shards.isNotEmpty()
 
-    override fun next(): Shard = iterator {
-        while (true) {
-            shards.find { it.hasCapacity }?.let {
-                yield(it)
+    override fun next(): Shard =
+        iterator {
+            while (true) {
+                shards.find { it.hasCapacity }?.let {
+                    yield(it)
+                }
             }
-        }
-    }.next()
+        }.next()
 
     fun invalidate() {
         logger.debug("received invalidation request")
@@ -41,16 +42,17 @@ internal class ShardIterator(
         }
     }
 
-    internal fun refresh(): CompletableFuture<Unit> = kinesis.listShards {
-        it.streamName(name).shardFilter { filter -> filter.type(ShardFilterType.AT_LATEST) }
-    }.handle { response, e ->
-        if (e == null) {
-            val openShards = response.shards().map { Shard(it.shardId(), it.hashKeyRange().endingHashKey()) }.toSet()
-            // This retains existing shards' representation (to avoid loosing track of quotas).
-            shards.addAll(openShards)
-            shards.retainAll(openShards)
-        } else {
-            logger.error("failed to update the shard list, retrying", e)
+    internal fun refresh(): CompletableFuture<Unit> =
+        kinesis.listShards {
+            it.streamName(name).shardFilter { filter -> filter.type(ShardFilterType.AT_LATEST) }
+        }.handle { response, e ->
+            if (e == null) {
+                val openShards = response.shards().map { Shard(it.shardId(), it.hashKeyRange().endingHashKey()) }.toSet()
+                // This retains existing shards' representation (to avoid loosing track of quotas).
+                shards.addAll(openShards)
+                shards.retainAll(openShards)
+            } else {
+                logger.error("failed to update the shard list, retrying", e)
+            }
         }
-    }
 }
