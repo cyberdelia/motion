@@ -18,7 +18,7 @@ dependencies {
     implementation("org.slf4j:slf4j-api:2.0.13")
 
     // AWS
-    implementation(platform("software.amazon.awssdk:bom:2.26.12"))
+    implementation(platform("software.amazon.awssdk:bom:2.26.16"))
     implementation("software.amazon.awssdk:kinesis")
     testImplementation("software.amazon.awssdk:sts")
 
