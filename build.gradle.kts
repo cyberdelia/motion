@@ -15,7 +15,7 @@ repositories {
 
 dependencies {
     // Logging
-    implementation("org.slf4j:slf4j-api:2.0.13")
+    implementation("org.slf4j:slf4j-api:2.0.16")
 
     // AWS
     implementation(platform("software.amazon.awssdk:bom:2.26.29"))
