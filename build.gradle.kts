@@ -28,7 +28,7 @@ dependencies {
     // Tests
     testImplementation(kotlin("test-junit5"))
     testImplementation("io.mockk:mockk:1.13.12")
-    testImplementation("ch.qos.logback:logback-classic:1.5.8")
+    testImplementation("ch.qos.logback:logback-classic:1.5.10")
 
     // Jackson
     testImplementation(platform("com.fasterxml.jackson:jackson-bom:2.18.0"))
