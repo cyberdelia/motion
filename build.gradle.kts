@@ -4,7 +4,7 @@ plugins {
     kotlin("jvm") version "2.0.21"
     `maven-publish`
     id("org.jetbrains.dokka") version "2.0.0"
-    id("org.jmailen.kotlinter") version "4.3.0"
+    id("org.jmailen.kotlinter") version "5.1.0"
 }
 
 group = "com.lapanthere"
