@@ -31,7 +31,7 @@ dependencies {
     testImplementation("ch.qos.logback:logback-classic:1.5.18")
 
     // Jackson
-    testImplementation(platform("com.fasterxml.jackson:jackson-bom:2.19.1"))
+    testImplementation(platform("com.fasterxml.jackson:jackson-bom:2.19.2"))
     testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 }
 
